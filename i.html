@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Virtual Try-On</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Title Styling */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 50px;
+            font-size: 2.5rem;
+        }
+
+        /* Search Bar Container */
+        .search-container {
+            margin-top: 30px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-bar:focus {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+        }
+
+        /* Selection Box at the Bottom */
+        .category-wrapper {
+            margin-top: auto; /* Pushes the box to the bottom */
+            margin-bottom: 50px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .selection-box {
+            display: flex;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .gender-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Divider between Male and Female */
+        .male {
+            border-right: 2px solid #333;
+            color: #333;
+        }
+
+        .female {
+            color: #333;
+        }
+
+        /* Hover effects */
+        .gender-option:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .selection-box {
+                flex-direction: column;
+                height: 300px;
+            }
+            .male {
+                border-right: none;
+                border-bottom: 2px solid #333;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AI Virtual Try-On</h1>
+
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search for items, brands, or styles...">
+    </div>
+
+    <div class="category-wrapper">
+        <div class="selection-box">
+            <div class="gender-option male">Male</div>
+            <div class="gender-option female">Female</div>
+        </div>
+    </div>
+
+</body>
+</html>
