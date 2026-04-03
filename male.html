@@ -91,13 +91,12 @@
 
         /* --- STAGE 2: SPLIT SCREEN MIRROR --- */
         #mirror-screen {
-            display: none; /* Hidden initially */
+            display: none;
             width: 100%;
             height: 100vh;
             flex-direction: row;
         }
 
-        /* Left Half: Your Photo (Remains Intact) */
         .mirror-left {
             flex: 1;
             height: 100%;
@@ -112,7 +111,6 @@
             object-fit: cover;
         }
 
-        /* Right Half: Selection/Content Panel */
         .mirror-right {
             flex: 1;
             height: 100%;
@@ -129,22 +127,21 @@
             border-bottom: 1px solid #ddd;
         }
 
+        /* UPDATED: Removed centering so varieties fill the width */
         #dynamic-content-area {
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100%;
         }
 
-        /* --- 3D GENDER SELECTION BUTTONS --- */
         .selection-box-3d {
             display: flex;
             gap: 20px;
-            width: 80%;
+            width: 100%;
             max-width: 500px;
-            perspective: 1000px; /* Essential for 3D effect */
+            margin: auto;
+            perspective: 1000px;
         }
 
         .gender-card {
@@ -162,22 +159,17 @@
             text-transform: uppercase;
             color: #333;
             box-shadow: var(--shadow-3d);
-            
-            /* 3D Transition Settings */
             transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.3s ease, color 0.3s ease;
             transform-style: preserve-3d;
-            transform: rotateY(0deg) translateZ(0px);
         }
 
-        /* 3D Hover/Active Effects */
         .gender-card:hover {
-            transform: rotateY(-10deg) translateZ(20px); /* Tilts and pops out */
-            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            transform: rotateY(-10deg) translateZ(20px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25);
             background-color: #333;
             color: #fff;
         }
 
-        /* Specific tilt for female card for variety */
         .female-card:hover {
             transform: rotateY(10deg) translateZ(20px);
         }
@@ -195,15 +187,15 @@
             z-index: 20;
         }
 
-        /* Loading Spinner */
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid var(--snap-yellow);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
             display: none;
+            margin: 50px auto;
         }
 
         @keyframes spin {
@@ -211,7 +203,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Mobile Optimization */
         @media (max-width: 768px) {
             #mirror-screen { flex-direction: column; }
             .mirror-left { height: 50%; border-right: none; border-bottom: 4px solid var(--snap-yellow); }
@@ -223,17 +214,14 @@
 
     <div id="camera-screen">
         <video id="video-feed" autoplay playsinline></video>
-        
         <div class="snap-controls">
             <label class="icon-btn" title="Upload">
                 📸
                 <input type="file" id="file-input" hidden accept="image/*">
             </label>
-            
             <div class="shutter-outer" id="take-photo">
                 <div class="shutter-inner"></div>
             </div>
-            
             <div class="icon-btn">🔄</div>
         </div>
     </div>
@@ -242,7 +230,7 @@
         <div class="mirror-left">
             <button class="retake-btn" onclick="location.reload()">↺ Retake</button>
             <img id="captured-image" src="" alt="Captured Mirror View">
-            <canvas id="capture-canvas" style="display:none;"></cindex.html/index.htmlanvas>
+            <canvas id="capture-canvas" style="display:none;"></canvas>
         </div>
 
         <div class="mirror-right">
@@ -253,10 +241,9 @@
 
             <div id="dynamic-content-area">
                 <div class="loader" id="content-loader"></div>
-                
                 <div class="selection-box-3d" id="gender-selection-ui">
                     <div class="gender-card male-card" id="load-male-content">Male</div>
-                    <div class="gender-card female-card">Female</div>
+                    <div class="gender-card female-card" id="load-female-content">Female</div>
                 </div>
             </div>
         </div>
@@ -269,34 +256,29 @@
         const capturedImage = document.getElementById('captured-image');
         const fileInput = document.getElementById('file-input');
         const canvas = document.getElementById('capture-canvas');
+        const contentArea = document.getElementById('dynamic-content-area');
+        const genderUi = document.getElementById('gender-selection-ui');
+        const loader = document.getElementById('content-loader');
 
-        // Access Camera
         async function initCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user" } 
-                });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 video.srcObject = stream;
             } catch (err) {
                 alert("Camera blocked. Please enable permissions.");
             }
         }
 
-        // Take Photo
         document.getElementById('take-photo').addEventListener('click', () => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
-            
-            // Mirror Effect
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0);
-            
             showMirror(canvas.toDataURL('image/png'));
         });
 
-        // File Upload
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -306,44 +288,34 @@
             }
         });
 
-        // Switch UI to Split Screen
         function showMirror(imageSrc) {
             capturedImage.src = imageSrc;
             cameraScreen.style.display = 'none';
             mirrorScreen.style.display = 'flex';
-            
             if (video.srcObject) {
                 video.srcObject.getTracks().forEach(track => track.stop());
             }
         }
 
-        // --- PARTIAL PAGE LOADING LOGIC ---
-        const maleBtn = document.getElementById('load-male-content');
-        const contentArea = document.getElementById('dynamic-content-area');
-        const genderUi = document.getElementById('gender-selection-ui');
-        const loader = document.getElementById('content-loader');
-
-        maleBtn.addEventListener('click', async () => {
-            // 1. Hide the initial gender buttons and show loader
+        // --- IMPROVED LINKING LOGIC ---
+        async function loadContent(pageName) {
             genderUi.style.display = 'none';
             loader.style.display = 'block';
 
             try {
-                // 2. Fetch male.html content via AJAX
-                const response = await fetch('male.html');
-                if (!response.ok) throw new Error('Failed to load page');
-                
-                const htmlContent = await response.text();
-                
-                // 3. Inject the male content into the right panel ONLY
-                contentArea.innerHTML = htmlContent;
-                
-                // (Note: Left panel #captured-image remains intact because the main window never reloaded)
+                const response = await fetch(pageName);
+                if (!response.ok) throw new Error('File not found');
+                const html = await response.text();
+                loader.style.display = 'none';
+                contentArea.innerHTML = html;
             } catch (error) {
-                contentArea.innerHTML = `<p style="color:red; text-align:center;">Error loading male collection. Ensure male.html exists.</p>`;
-                console.error(error);
+                loader.style.display = 'none';
+                contentArea.innerHTML = `<p style="color:red; text-align:center;">Error: Ensure ${pageName} is in the same folder.</p>`;
             }
-        });
+        }
+
+        document.getElementById('load-male-content').addEventListener('click', () => loadContent('male.html'));
+        document.getElementById('load-female-content').addEventListener('click', () => loadContent('female.html'));
 
         initCamera();
     </script>
